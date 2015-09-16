@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CHAT</title>
+		<link rel="stylesheet" href="static/main.css">
+	</head>
+	<body>
+		<div class="chat">
+			<input type	= "text" class="chat_name" placeholder = "Enter your name">
+			<div class ="chat_messages">
+			</div>
+			<textarea class = "chat_textarea" placeholder = "Type your message"></textarea>
+			<div class = "chat_status">Status: <span>IDLE</span></div> 
+		</div>
+		<script src="http://127.0.0.1:1337/socket.io/socket.io.js"></script>
+		<script>
+			(function(){
+				var getElement = function(s){
+					return document.querySelector(s); // DOM function for selectiong any element 
+				}
+				textarea = getElement('.chat textarea'),
+				chatName = getElement('.chat_name');
+				try{
+					var socket = io.connect("http://localhost:1337"); //connection
+
+				}catch(e){
+						//Connection Not established : Warn User 
+				}
+
+				if(socket!= undefined){
+					
+					//Listen for any key press
+
+					textarea.addEventListener('keydown', function(event){
+						
+						var name = chatName.value;
+
+						// console.log(event); // Display the list of Events Occured
+						if(event.which==13 && event.shiftKey == false){
+							console.log("Sent");
+							socket.emit('input',
+							{
+								name:name,
+								message:this.value
+							})
+						}
+					})
+				}
+				
+
+
+			})();
+		</script>
+	</body>
+</html>
