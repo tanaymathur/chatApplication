@@ -14,19 +14,46 @@ app.get('/', function(req,res){     // routing
 
 mongo.connect('mongodb://localhost/chat', function(err, db){  //connecting mongodb
 	if(err) throw err;
-	var col = db.collection('messages');  //initializing collection message
+	
 	client.on('connection', function(socket){  // socket.io connection 
+
+		var col = db.collection('messages');  //initializing collection message
+
+		
+
+		//Emit All Messages
+		col.find().limit(100).sort({_id:1}).toArray(function(err,result){
+			if(err) throw err;
+			socket.emit('output',result);
+		})
+
+
+		//Wait For Input
 		socket.on('input',function(data){   //receiving data from frontend using input as an event
+			sendStatus = function(s){   
+				socket.emit('status',s);  //Emiting event status with particular status
+			};
+
 			var name = data.name,			
 				message = data.message;
 				blankRegExp = /^\s*$/;		//Regular Expression for blanks
 
 			if (blankRegExp.test(name) || blankRegExp.test(message)) {  // Check if name or message is blank 
-					console.log("Invalid")
+					// console.log("Invalid")
+					sendStatus('Name and Message is required');  //Status for Name and Message rerquired
 			}
 			else{
 					col.insert({name:name, message:message}, function(){ // mongodb insertion
-					console.log("Inserted");
+
+					//Emit Latest Message
+					
+					
+					sendStatus(                             
+					{
+						message: "Message Sent",      
+						clear : true                  //this clear value is used to clear the chat box when press enter	
+					})
+					client.emit('output',[data]);
 				})
 			} 
 			

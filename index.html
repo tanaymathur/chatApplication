@@ -10,7 +10,7 @@
 			<div class ="chat_messages">
 			</div>
 			<textarea class = "chat_textarea" placeholder = "Type your message"></textarea>
-			<div class = "chat_status">Status: <span>IDLE</span></div> 
+			<div class = "chat_status">Status: <span>Idle</span></div> 
 		</div>
 		<script src="http://127.0.0.1:1337/socket.io/socket.io.js"></script>
 		<script>
@@ -18,8 +18,24 @@
 				var getElement = function(s){
 					return document.querySelector(s); // DOM function for selectiong any element 
 				}
+
 				textarea = getElement('.chat textarea'),
-				chatName = getElement('.chat_name');
+				messages = getElement('.chat_messages'),
+				chatName = getElement('.chat_name'),
+				statusValue = getElement('.chat_status span'),   
+				 
+				statusDefault = statusValue.textContent;  //extracting text from element and setting it 												to default
+				
+				setStatus = function(s){
+					statusValue.textContent = s;    //changing status value//
+					if(s!= statusDefault){			
+						var delay = setTimeout(function(){  //Timeout  of 3 sec to change the status back to origignal 
+							setStatus(statusDefault);
+
+						},3000)
+					}
+				}
+				// console.log(statusDefault);
 				try{
 					var socket = io.connect("http://localhost:1337"); //connection
 
@@ -28,7 +44,32 @@
 				}
 
 				if(socket!= undefined){
-					
+
+					//Listen for output 
+					socket.on('output',function(data){
+
+						if(data.length){
+							//Loop through resuts
+							for(var x =0; x<data.length; x++){
+								var message = document.createElement('div');
+								message.setAttribute('class','chat_message');
+								message.textContent = data[x].name + ":" + data[x].message;
+
+								messages.appendChild(message);
+								messages.insertBefore(message, messages.firstChild);
+							}
+						}
+						
+					})
+						
+
+					//Listen for status
+					socket.on('status', function(data){  //receiving event status
+						
+						setStatus((typeof data == 'object')? data.message  : data);
+						if(data.clear = true)
+							textarea.value = '';
+					})
 					//Listen for any key press
 
 					textarea.addEventListener('keydown', function(event){
