@@ -47,7 +47,7 @@
 
 					//Listen for output 
 					socket.on('output',function(data){
-
+						//console.log("##",data)
 						if(data.length){
 							//Loop through resuts
 							for(var x =0; x<data.length; x++){
@@ -55,8 +55,12 @@
 								message.setAttribute('class','chat_message');
 								message.textContent = data[x].name + ":" + data[x].message;
 
+								//console.log("###",message);
 								messages.appendChild(message);
-								messages.insertBefore(message, messages.firstChild);
+								//console.log("$$$$",messages);
+								messages.insertBefore(message, messages.lastChild);
+								//console.log("!!!!!!!",messages);
+
 							}
 						}
 						
@@ -75,7 +79,6 @@
 					textarea.addEventListener('keydown', function(event){
 						
 						var name = chatName.value;
-
 						// console.log(event); // Display the list of Events Occured
 						if(event.which==13 && event.shiftKey == false){
 							console.log("Sent");

@@ -10,6 +10,7 @@ input{
 
 .chat_messages,
 .chat_textarea,
+.chat_group,
 .chat_name {
 	border: 1px solid #bbb;
 }
@@ -31,6 +32,13 @@ input{
 	border-bottom: 0;
 	margin: 0;
 }
+.chat_group{
+	width: 100%;
+	padding: 10px;
+	border-bottom: 0;
+	margin: 0;
+}
+
 
 .chat_textarea {
 	width: 100%;

@@ -19,28 +19,31 @@ mongo.connect('mongodb://localhost/chat', function(err, db){  //connecting mongo
 
 		var col = db.collection('messages');  //initializing collection message
 
-		
-
 		//Emit All Messages
 		col.find().limit(100).sort({_id:1}).toArray(function(err,result){
 			if(err) throw err;
+			//console.log("##",result);
 			socket.emit('output',result);
 		})
 
-
 		//Wait For Input
 		socket.on('input',function(data){   //receiving data from frontend using input as an event
+			
+
+
 			sendStatus = function(s){   
 				socket.emit('status',s);  //Emiting event status with particular status
 			};
 
 			var name = data.name,			
 				message = data.message;
+
+			
 				blankRegExp = /^\s*$/;		//Regular Expression for blanks
 
-			if (blankRegExp.test(name) || blankRegExp.test(message)) {  // Check if name or message is blank 
+			if (blankRegExp.test(name) || blankRegExp.test(message )) {  // Check if name or message is blank 
 					// console.log("Invalid")
-					sendStatus('Name and Message is required');  //Status for Name and Message rerquired
+					sendStatus('Name & Message  is required');  //Status for Name and Message rerquired
 			}
 			else{
 					col.insert({name:name, message:message}, function(){ // mongodb insertion
@@ -53,6 +56,7 @@ mongo.connect('mongodb://localhost/chat', function(err, db){  //connecting mongo
 						message: "Message Sent",      
 						clear : true                  //this clear value is used to clear the chat box when press enter	
 					})
+					//console.log(data);
 					client.emit('output',[data]);
 				})
 			} 
